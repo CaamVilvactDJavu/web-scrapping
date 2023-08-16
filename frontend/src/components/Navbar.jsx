@@ -1,6 +1,7 @@
 import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MenuNavbar } from "../menu/MenuNavbar";
 
 function Navbar() {
     return (
@@ -11,17 +12,13 @@ function Navbar() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                     </label>
                     <ul tabIndex={1} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                        <li>
-                            <a href="#">Home</a>
-                            <a href="#">Sensors</a>
-                        </li>
-                        {/* {MenuData.map((item, index) => {
+                        {MenuNavbar.map((item, index) => {
                             return (
                                 <>
                                     <li key={index}><a href={item.url}><FontAwesomeIcon icon={item.icon} />{item.title}</a></li>
                                 </>
                             );
-                        })} */}
+                        })}
                     </ul>
                 </div>
             </div>

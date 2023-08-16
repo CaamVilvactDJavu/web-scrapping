@@ -1,10 +1,12 @@
 import React from 'react'
-import Sensor from './Sensor'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 
 function Home() {
     return (
         <div>
-            <Sensor />
+            <Navbar />
+            <Footer />
         </div>
     )
 }

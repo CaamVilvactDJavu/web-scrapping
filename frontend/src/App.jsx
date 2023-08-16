@@ -1,19 +1,19 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React from 'react';
-import './App.css';
 import Home from './Home';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Sensor from "./Sensor";
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <header className="App-header">
-        <h1>Home</h1>
-        <Home />
-      </header>
-      <Footer />
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/sensors" element={<Sensor />} />
+        </Routes>
+      </BrowserRouter>
     </div>
+
   );
 }
 

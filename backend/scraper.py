@@ -17,29 +17,11 @@ def sensors():
     table_data = [[cell.get_text(strip=True)
                    for cell in row.select('td')] for row in rows]
 
-    table_styles = """
-    border-collapse: collapse;
-    width: 100%;
-    border: 1px solid #ddd;
-    """
-
-    td_th_styles = """
-    border: 1px solid #ddd;
-    padding: 8px;
-    """
-
-    tr_styles = """
-    background-color: #f2f2f2;
-    """
-
-    html_table = f'<table style="{table_styles}">'
-    for i, row in enumerate(table_data):
-        if i % 2 == 0:  # Add alternative row coloring
-            html_table += f'<tr style="{tr_styles}">'
-        else:
-            html_table += "<tr>"
+    html_table = '<table>'
+    for row in table_data:
+        html_table += "<tr>"
         for cell in row:
-            html_table += f'<td style="{td_th_styles}">{cell}</td>'
+            html_table += f"<td>{cell}</td>"
         html_table += "</tr>"
     html_table += "</table>"
 
