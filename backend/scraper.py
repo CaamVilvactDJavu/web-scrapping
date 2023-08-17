@@ -7,14 +7,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-
 app = Flask(__name__)
 CORS(app)
 
 
 @app.route('/sensors', methods=['GET', 'POST'])
 def sensors():
-    search_term = "padang panjang"  # Change this to your desired search term
+    search_term = "padang panjang"
     url = "http://202.90.198.40/sismon-wrs/web/slmon2/"
 
     chrome_options = Options()
@@ -22,56 +21,83 @@ def sensors():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
 
+    all_table_data = []
+
     with webdriver.Chrome(options=chrome_options) as driver:
         driver.get(url)
 
-        # Locate the search input using its attributes
         search_input = driver.find_element(
             By.XPATH, "//*[@id='test_filter']/label/input")
-
-        # Send the search term to the search input
         search_input.send_keys(search_term)
 
-        # Optionally, add a delay or use WebDriverWait to wait for the search results to load
+        try:
+            WebDriverWait(driver, 300).until_not(
+                EC.text_to_be_present_in_element(
+                    (By.XPATH, "//table[@id='test']//td[contains(text(), 'No data available in table')]"), "No data available in table")
+            )
+        except Exception as e:
+            return jsonify({"error": "No data found for the search term"}), 404
+
         WebDriverWait(driver, 60).until_not(
             EC.text_to_be_present_in_element(
                 (By.XPATH, "//table[@id='test']//td[contains(text(), 'Loading...')]"), "Loading...")
         )
 
-        # Wait for 'No data available in table' to disappear (wait for a maximum of 5 minutes in this example)
-        WebDriverWait(driver, 300).until_not(
-            EC.text_to_be_present_in_element(
-                (By.XPATH, "//table[@id='test']//td[contains(text(), 'No data available in table')]"), "No data available in table")
-        )
+        while True:
+            page_content = driver.page_source
+            soup = BeautifulSoup(page_content, 'html.parser')
 
-        page_content = driver.page_source
+            table = soup.find("table", {"id": "test"})
+            if not table:
+                return jsonify({"error": "Table not found"}), 404
 
-    soup = BeautifulSoup(page_content, 'html.parser')
+            headers = [header.text for header in table.find(
+                "thead").find_all("th")]
 
-    # Extract the table
-    table = soup.find("table", {"id": "test"})
-    if not table:
-        return jsonify({"error": "Table not found"}), 404
+            tbody = table.find("tbody")
+            if not tbody:
+                return jsonify({"error": "Table body not found"}), 404
 
-    # Extract table headers
-    headers = [header.text for header in table.find("thead").find_all("th")]
+            rows = tbody.find_all("tr")
+            for row in rows:
+                columns = row.find_all("td")
+                row_data = {}
+                for header, column in zip(headers, columns):
+                    row_data[header] = column.text.strip()
+                all_table_data.append(row_data)
 
-    # Extract rows
-    tbody = table.find("tbody")
-    if not tbody:
-        return jsonify({"error": "Table body not found"}), 404
+            # Check if the next button is available and clickable
+            try:
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, "//*[@id='test_next']"))
+                )
 
-    rows = tbody.find_all("tr")
-    table_data = []
+                print("Next button class:", next_button.get_attribute("class"))
 
-    for row in rows:
-        columns = row.find_all("td")
-        row_data = {}
-        for header, column in zip(headers, columns):
-            row_data[header] = column.text.strip()
-        table_data.append(row_data)
+                if "disabled" in next_button.get_attribute("class"):
+                    break  # If the button is disabled, we're on the last page
 
-    return jsonify(table_data)
+                next_button.location_once_scrolled_into_view
+
+                try:
+                    next_button.click()
+                except Exception as e:
+                    driver.execute_script("arguments[0].click();", next_button)
+
+                print("Clicked next button")
+
+                # Wait for the table to load after clicking Next
+                WebDriverWait(driver, 60).until_not(
+                    EC.text_to_be_present_in_element(
+                        (By.XPATH, "//table[@id='test']//td[contains(text(), 'Loading...')]"), "Loading...")
+                )
+
+            except Exception as e:
+                print(f"Error navigating to the next page: {e}")
+                break  # If there's an error finding/clicking the next button, exit the loop
+
+    return jsonify(all_table_data)
 
 
 if __name__ == "__main__":
