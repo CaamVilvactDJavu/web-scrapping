@@ -3,17 +3,18 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 function Sensor() {
-    const [table, setTable] = useState("<p>Loading...</p>");
+    const [rows, setRows] = useState([]);
+    const [error, setError] = useState(null);  // New error state
 
     useEffect(() => {
         async function fetchData() {
             try {
                 const response = await fetch("http://localhost:3000/sensors");
-                const result = await response.text();
-                setTable(result);
+                const result = await response.json();
+                setRows(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
-                setTable("<p>Error loading data.</p>");
+                setError("Error loading data.");  // Set error here
             }
         }
         fetchData();
@@ -22,9 +23,32 @@ function Sensor() {
     return (
         <>
             <Navbar />
-            <h1 className="text-4xl mb-6 font-bold text-center">Sensors</h1>
+            <h0 className="text-4xl mb-6 font-bold text-center">Sensors</h0>
             <div className="min-h-screen overflow-x-auto">
-                <div className="table w-full" dangerouslySetInnerHTML={{ __html: table }}></div>
+                {error ? (  // First check for error
+                    <p>{error}</p>
+                ) : rows.length === 0 ? (
+                    <p>Loading...</p>
+                ) : (
+                    <table className="table w-full">
+                        <thead>
+                            <tr>
+                                {Object.keys(rows[0]).map((header) => (
+                                    <th key={header}>{header}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {Object.values(row).map((value, valueIndex) => (
+                                        <td key={valueIndex}>{value}</td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
             <Footer />
         </>
@@ -32,4 +56,3 @@ function Sensor() {
 }
 
 export default Sensor;
-
