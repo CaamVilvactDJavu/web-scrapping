@@ -11,7 +11,7 @@ function Sensor() {
             try {
                 const response = await fetch("http://localhost:3000/sensors");
                 const result = await response.json();
-                setRows(result.reverse());  // reverse the rows here
+                setRows(result);  // reverse the rows here
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setError("Error loading data.");
@@ -23,7 +23,7 @@ function Sensor() {
     return (
         <>
             <Navbar />
-            <h0 className="text-4xl mb-6 font-bold text-center">Sensors</h0>
+            <h1 className="text-4xl mb-6 font-bold text-center">Sensors</h1>
             <div className="min-h-screen overflow-x-auto">
                 {error ? (
                     <p>{error}</p>
@@ -33,8 +33,8 @@ function Sensor() {
                     <table className="table w-full">
                         <thead>
                             <tr>
-                                <th>No.</th>  {/* Added row number header */}
-                                {Object.keys(rows[0]).map((header) => (
+                                <th>No.</th>  {/* Keep row number header as is */}
+                                {[...Object.keys(rows[0])].reverse().map((header) => (   // Reverse the headers
                                     <th key={header}>{header}</th>
                                 ))}
                             </tr>
@@ -42,8 +42,8 @@ function Sensor() {
                         <tbody>
                             {rows.map((row, rowIndex) => (
                                 <tr key={rowIndex}>
-                                    <td>{rowIndex + 1}</td>  {/* Added row number */}
-                                    {Object.values(row).map((value, valueIndex) => (
+                                    <td>{rowIndex + 1}</td>  {/* Keep row number as is */}
+                                    {[...Object.values(row)].reverse().map((value, valueIndex) => (  // Reverse the row values
                                         <td key={valueIndex}>{value}</td>
                                     ))}
                                 </tr>
