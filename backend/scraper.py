@@ -14,11 +14,10 @@ CORS(app)
 
 @app.route('/sensors', methods=['GET', 'POST'])
 def sensors():
+    search_term = "padang panjang"  # Change this to your desired search term
     url = "http://202.90.198.40/sismon-wrs/web/slmon2/"
 
-    # Setup Selenium Chrome options
     chrome_options = Options()
-    # Run Chrome in headless mode (no GUI)
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
@@ -26,12 +25,25 @@ def sensors():
     with webdriver.Chrome(options=chrome_options) as driver:
         driver.get(url)
 
-        WebDriverWait(driver, 10).until_not(
+        # Locate the search input using its attributes
+        search_input = driver.find_element(
+            By.XPATH, "//*[@id='test_filter']/label/input")
+
+        # Send the search term to the search input
+        search_input.send_keys(search_term)
+
+        # Optionally, add a delay or use WebDriverWait to wait for the search results to load
+        WebDriverWait(driver, 60).until_not(
             EC.text_to_be_present_in_element(
                 (By.XPATH, "//table[@id='test']//td[contains(text(), 'Loading...')]"), "Loading...")
         )
 
-        # Extract page content
+        # Wait for 'No data available in table' to disappear (wait for a maximum of 5 minutes in this example)
+        WebDriverWait(driver, 300).until_not(
+            EC.text_to_be_present_in_element(
+                (By.XPATH, "//table[@id='test']//td[contains(text(), 'No data available in table')]"), "No data available in table")
+        )
+
         page_content = driver.page_source
 
     soup = BeautifulSoup(page_content, 'html.parser')
