@@ -2,32 +2,33 @@ import React, { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 
 function Footer() {
-    const [currentDate, setCurrentDate] = useState(DateTime.utc())
+    const [currentDate, setCurrentDate] = useState(DateTime.utc());
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentDate(DateTime.utc())
-        },)
+            setCurrentDate(DateTime.utc());
+        }, 1000); // Every 1 second
 
-        return () => clearInterval(interval)
-    }, [])
+        return () => clearInterval(interval);
+    }, []);
 
     const format = {
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
-    }
+        second: '2-digit',
+        hourCycle: 'h23'
+    };
 
     return (
-        <footer className="footer footer-center p-4 bg-base-300 mt-2 text-base-content fixed inset-x-0 bottom-0 font-bold">
-            <div>
-                <p>Copyright © 2023 - All rights reserved by ACME Industries Ltd</p>
-            </div>
-            <div>
-                <p>{currentDate.setZone('Asia/Jakarta').toLocaleString(format)} WIB</p>
-                <p>{currentDate.setZone('Asia/Makassar').toLocaleString(format)} WITA</p>
-                <p>{currentDate.setZone('Asia/Jayapura').toLocaleString(format)} WIT</p>
-                <p>{currentDate.toUTC().toLocaleString(format)} UTC</p>
+        <footer className="footer footer-center p-4 mt-2 text-base-content sticky bottom-0 inset-x-0 bg-gray-100">
+            <div className="flex justify-between items-center w-full border-t-2 py-2">
+                <p>Copyright © 2023 - All rights reserved by c.a._.a.m</p>
+                <div className="text-right">
+                    <p>{currentDate.setZone('Asia/Jakarta').toLocaleString(format)} WIB</p>
+                    <p>{currentDate.setZone('Asia/Makassar').toLocaleString(format)} WITA</p>
+                    <p>{currentDate.setZone('Asia/Jayapura').toLocaleString(format)} WIT</p>
+                    <p>{currentDate.toUTC().toLocaleString(format)} UTC</p>
+                </div>
             </div>
         </footer>
     );

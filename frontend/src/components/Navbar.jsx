@@ -5,7 +5,7 @@ import { MenuNavbar } from "../menu/MenuNavbar";
 
 function Navbar() {
     return (
-        <div className="navbar w-auto h-auto bg-base-100 drop-shadow-xl m-4 rounded-lg rounded-b-md ">
+        <div className="navbar w-auto h-auto bg-base-100 drop-shadow-xl m-4 rounded-lg rounded-b-md">
             <div className="navbar-start">
                 <div className="dropdown">
                     <label tabIndex={0} className="btn btn-ghost btn-circle">
