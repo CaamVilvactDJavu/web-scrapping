@@ -2,19 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
-function getCellColor(content) {
-    const colors = ["green", "yellow", "orange", "red", "grey", "black"];
-    return colors.includes(content.toLowerCase()) ? content.toLowerCase() : "";
-}
 
-function Sensor() {
+function Sensor2() {
     const [rows, setRows] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:3000/sensors");
+                const response = await fetch("http://localhost:3000/sensors2");
                 const result = await response.json();
                 setRows(result);  // reverse the rows here
             } catch (error) {
@@ -50,7 +46,7 @@ function Sensor() {
                                     <tr key={rowIndex}>
                                         <td>{rowIndex + 1}</td>  {/* Keep row number as is */}
                                         {[...Object.values(row)].reverse().map((value, valueIndex) => (  // Reverse the row values
-                                            <td key={valueIndex} style={{ color: getCellColor(value) }}>{value}</td>
+                                            <td key={valueIndex}>{value}</td>
                                         ))}
                                     </tr>
                                 ))}
@@ -64,4 +60,4 @@ function Sensor() {
     );
 }
 
-export default Sensor;
+export default Sensor2;

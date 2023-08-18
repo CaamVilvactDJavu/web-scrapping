@@ -59,6 +59,7 @@ def sensors():
                 return jsonify({"error": "Table body not found"}), 404
 
             rows = tbody.find_all("tr")
+
             for row in rows:
                 columns = row.find_all("td")
                 row_data = {}

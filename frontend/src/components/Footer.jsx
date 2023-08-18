@@ -20,7 +20,7 @@ function Footer() {
     };
 
     return (
-        <footer className="footer footer-center p-4 mt-2 text-base-content sticky bottom-0 inset-x-0 bg-gray-100">
+        <footer className="footer footer-center p-4 mt-2 text-base-content bg-gray-100">
             <div className="flex justify-between items-center w-full border-t-2 py-2">
                 <p>Copyright © 2023 - All rights reserved by c.a._.a.m</p>
                 <div className="text-right">

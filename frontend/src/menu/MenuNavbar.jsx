@@ -10,5 +10,10 @@ export const MenuNavbar = [
         title: "Sensors",
         url: "/sensors",
         icon: faGears
+    },
+    {
+        title: "Sensors2",
+        url: "/sensors2",
+        icon: faGears
     }
 ]
