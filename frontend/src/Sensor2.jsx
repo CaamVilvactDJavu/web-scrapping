@@ -24,18 +24,22 @@ function Sensors2() {
         fetchData();
     }, []);
 
-    // ... (previous code)
-
     return (
         <>
             <Navbar />
-            <h1 className="text-4xl mb-6 font-bold text-center">Sensor Accelerograph</h1>
+            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensor Accelerograph</h1>
             <div className="flex flex-col min-h-screen overflow-x-auto">
                 <div className='flex-grow overflow-x-auto'>
                     {error ? (
                         <p>{error}</p>
                     ) : !data ? (
-                        <p>Loading...</p>
+                        <div className='flex justify-center items-center h-full'>
+                            <p className=' font-bold text-xl'>Loading</p>
+                            <span className="loading loading-ring loading-xs"></span>
+                            <span className="loading loading-ring loading-sm"></span>
+                            <span className="loading loading-ring loading-md"></span>
+                            <span className="loading loading-ring loading-lg"></span>
+                        </div>
                     ) : (
                         <table className="table w-full">
                             <thead>
