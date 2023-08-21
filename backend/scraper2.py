@@ -12,7 +12,7 @@ CORS(app)
 
 
 @app.route('/sensors2', methods=['GET'])
-def sensors():
+def sensors2():
     login_url = "https://simora.bmkg.go.id/simora/web/login_page"
     target_url = "https://simora.bmkg.go.id/simora/simora_upt/status_acc2"
     username = 'stageof.padangpanjang'
@@ -23,65 +23,67 @@ def sensors():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
 
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get(login_url)
+    all_table_data = []
 
-    try:
+    with webdriver.Chrome(options=chrome_options) as driver:
+        driver.get(login_url)
+
         # Use explicit waits
         wait = WebDriverWait(driver, 15)
 
         # Login process
-        print("Trying to locate username input")
         username_input = wait.until(
             EC.presence_of_element_located((By.ID, 'exampleInputEmail')))
-
-        print("Trying to locate password input")
         password_input = wait.until(
             EC.presence_of_element_located((By.ID, 'exampleInputPassword')))
-
-        print("Trying to locate login button")
         login_button = wait.until(EC.presence_of_element_located(
             (By.XPATH, '//input[@name="login"]')))
 
-        print("Sending credentials")
         username_input.send_keys(username)
         password_input.send_keys(password)
         login_button.click()
 
         # Navigate to the target URL
-        print("Navigating to target URL")
         driver.get(target_url)
 
-        # Get headers using EC
-        print("Fetching headers")
+        # Get headers
         header_elements = wait.until(EC.presence_of_all_elements_located(
             (By.XPATH, '//*[@id="example"]//thead/tr/th')))
         headers = [header.text for header in header_elements]
 
-        # Get rows using EC
-        print("Fetching rows")
-        rows = wait.until(EC.presence_of_all_elements_located(
-            (By.XPATH, '//*[@id="example"]//tbody/tr')))
+        while True:
+            # Get rows
+            rows = wait.until(EC.presence_of_all_elements_located(
+                (By.XPATH, '//*[@id="example"]//tbody/tr')))
 
-        table_data = []
-        for index, row in enumerate(rows):
-            print(f"Fetching data for row {index + 1}")
-            cell_locator = (
-                By.XPATH, f'//*[@id="example"]//tbody/tr[{index + 1}]/td')
-            cells = wait.until(
-                EC.presence_of_all_elements_located(cell_locator))
-            row_data = {headers[i]: cell.text for i, cell in enumerate(cells)}
-            table_data.append(row_data)
+            for row in rows:
+                cells = row.find_elements(By.TAG_NAME, "td")
+                row_data = {}
+                for header, cell in zip(headers, cells):
+                    row_data[header] = cell.text.strip()
+                all_table_data.append(row_data)
 
-        print("Data fetched successfully")
-        return jsonify({"message": "Logged in and extracted data successfully!", "data": table_data})
+            # Check if the next button is available and clickable
+            try:
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//*[@id='example_next']")))
 
-    except Exception as e:
-        print("Error:", e)
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+                if "disabled" in next_button.get_attribute("class"):
+                    break  # If the button is disabled, we're on the last page
 
-    finally:
-        driver.quit()
+                driver.execute_script("arguments[0].click();", next_button)
+
+                # Wait for the table to load after clicking Next
+                WebDriverWait(driver, 60).until_not(
+                    EC.text_to_be_present_in_element(
+                        (By.XPATH, "//table[@id='example']//td[contains(text(), 'Loading...')]"), "Loading...")
+                )
+
+            except Exception as e:
+                print(f"Error navigating to the next page: {e}")
+                break  # If there's an error finding/clicking the next button, exit the loop
+
+    return jsonify(all_table_data)
 
 
 if __name__ == "__main__":
