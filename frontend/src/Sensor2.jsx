@@ -10,11 +10,10 @@ function Sensors2() {
         async function fetchData() {
             try {
                 const response = await fetch("http://localhost:3001/sensors2");
+                const result = await response.json();
                 if (response.ok) {
-                    const result = await response.json();
-                    setData(result.message);
+                    setData(result);
                 } else {
-                    const result = await response.json();
                     setError(result.error);
                 }
             } catch (error) {
@@ -34,7 +33,27 @@ function Sensors2() {
                 ) : !data ? (
                     <div>Loading...</div>
                 ) : (
-                    <div>{data}</div>
+                    <div>
+                        <p>{data.message}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    {data.data[0] && Object.keys(data.data[0]).map((header, index) => (
+                                        <th key={index}>{header}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.data.map((row, rowIndex) => (
+                                    <tr key={rowIndex}>
+                                        {Object.values(row).map((cell, cellIndex) => (
+                                            <td key={cellIndex}>{cell}</td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
             <Footer />
@@ -42,4 +61,4 @@ function Sensors2() {
     );
 }
 
-export default Sensors2;
+export default Sensors2

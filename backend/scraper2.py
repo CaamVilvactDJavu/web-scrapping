@@ -5,6 +5,7 @@ from flask_cors import CORS
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -13,7 +14,7 @@ CORS(app)
 @app.route('/sensors2', methods=['GET'])
 def sensors():
     login_url = "https://simora.bmkg.go.id/simora/web/login_page"
-
+    target_url = "https://simora.bmkg.go.id/simora/simora_upt/status_acc2"
     username = 'stageof.padangpanjang'
     password = '12345678'
 
@@ -22,40 +23,65 @@ def sensors():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
 
-    with webdriver.Chrome(options=chrome_options) as driver:
-        driver.get(login_url)
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get(login_url)
 
-        try:
-            # Use explicit waits
-            wait = WebDriverWait(driver, 15)
+    try:
+        # Use explicit waits
+        wait = WebDriverWait(driver, 15)
 
-            # Login process
-            username_input = wait.until(
-                EC.presence_of_element_located((By.ID, 'exampleInputEmail')))
-            password_input = wait.until(
-                EC.presence_of_element_located((By.ID, 'exampleInputPassword')))
-            login_button = wait.until(EC.presence_of_element_located(
-                (By.XPATH, '//input[@name="login"]')))
+        # Login process
+        print("Trying to locate username input")
+        username_input = wait.until(
+            EC.presence_of_element_located((By.ID, 'exampleInputEmail')))
 
-            username_input.send_keys(username)
-            password_input.send_keys(password)
-            login_button.click()
+        print("Trying to locate password input")
+        password_input = wait.until(
+            EC.presence_of_element_located((By.ID, 'exampleInputPassword')))
 
-            print("Logged in successfully!")
-            print("URL after login:", driver.current_url)
+        print("Trying to locate login button")
+        login_button = wait.until(EC.presence_of_element_located(
+            (By.XPATH, '//input[@name="login"]')))
 
-            # Click on the sidebar item after logging in
-            print("Waiting for sidebar element...")
-            sidebar_element = wait.until(EC.element_to_be_clickable(
-                (By.XPATH, '//*[@id="sidebar"]/ul/li[2]/a')))
-            sidebar_element.click()
-            print("Clicked on the sidebar anchor")
+        print("Sending credentials")
+        username_input.send_keys(username)
+        password_input.send_keys(password)
+        login_button.click()
 
-            return jsonify({"message": "Logged in and clicked the sidebar successfully!"})
+        # Navigate to the target URL
+        print("Navigating to target URL")
+        driver.get(target_url)
 
-        except Exception as e:
-            print("Error:", e)
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        # Get headers using EC
+        print("Fetching headers")
+        header_elements = wait.until(EC.presence_of_all_elements_located(
+            (By.XPATH, '//*[@id="example"]//thead/tr/th')))
+        headers = [header.text for header in header_elements]
+
+        # Get rows using EC
+        print("Fetching rows")
+        rows = wait.until(EC.presence_of_all_elements_located(
+            (By.XPATH, '//*[@id="example"]//tbody/tr')))
+
+        table_data = []
+        for index, row in enumerate(rows):
+            print(f"Fetching data for row {index + 1}")
+            cell_locator = (
+                By.XPATH, f'//*[@id="example"]//tbody/tr[{index + 1}]/td')
+            cells = wait.until(
+                EC.presence_of_all_elements_located(cell_locator))
+            row_data = {headers[i]: cell.text for i, cell in enumerate(cells)}
+            table_data.append(row_data)
+
+        print("Data fetched successfully")
+        return jsonify({"message": "Logged in and extracted data successfully!", "data": table_data})
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
