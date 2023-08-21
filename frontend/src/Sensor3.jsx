@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "./components/Navbar"
+import Footer from "./components/Footer"
 import ReactToPrint from "react-to-print";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
 
 
-function Sensors2() {
+function Sensor3() {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
-    const componentRef = useRef();
+    const componentRef = useRef()
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:3001/sensors2");
+                const response = await fetch("http://localhost:3002/sensors3");
                 const result = await response.json();
                 if (response.ok) {
                     setData(result);
@@ -31,7 +31,7 @@ function Sensors2() {
     return (
         <>
             <Navbar />
-            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensor Accelerograph</h1>
+            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensor Intensitymeter</h1>
             <div ref={componentRef} className="flex flex-col min-h-screen overflow-x-auto">
                 <div className='flex-grow overflow-x-auto'>
                     {error ? (
@@ -79,4 +79,4 @@ function Sensors2() {
     );
 }
 
-export default Sensors2;
+export default Sensor3;

@@ -3,6 +3,7 @@ import React from 'react';
 import Home from './Home';
 import Sensor from "./Sensor";
 import Sensor2 from "./Sensor2";
+import Sensor3 from "./Sensor3";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/sensors" element={<Sensor />} />
           <Route path="/sensors2" element={<Sensor2 />} />
+          <Route path="/sensors3" element={<Sensor3 />} />
         </Routes>
       </BrowserRouter>
     </div>

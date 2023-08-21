@@ -1,5 +1,5 @@
-// import { faGears, faHouseChimney, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { faClock, faHouseChimney, faTimes } from "@fortawesome/free-solid-svg-icons";
+// import { faClock, faGears, faHouseChimney, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
 
 export const MenuNavbar = [
     {
@@ -18,9 +18,9 @@ export const MenuNavbar = [
         // icon: faGears
     },
     {
-        title: "Time",
-        url: "/time",
-        icon: faClock
+        title: "Sensors3",
+        url: "/sensors3",
+        // icon: faGears
     }
 
 ]
