@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 import ReactToPrint from "react-to-print";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,7 @@ function getCellColor(content) {
     return colors.includes(content.toLowerCase()) ? content.toLowerCase() : "";
 }
 
-function Sensor() {
+function SismonWrs() {
     const [rows, setRows] = useState([]);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,12 +19,11 @@ function Sensor() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:3000/sensors");
+                const response = await fetch("http://localhost:3000/sismon_wrs");
                 const result = await response.json();
-                setRows(result);  // reverse the rows here
+                setRows(result);
                 setIsLoading(false);
             } catch (error) {
-                console.error("Error fetching data:", error);
                 setError("Error loading data.");
                 setIsLoading(false);
             }
@@ -35,7 +34,11 @@ function Sensor() {
     return (
         <>
             <Navbar />
-            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensors</h1>
+            <h1 className="text-4xl p-2 mb-6 font-bold text-center">Realtime Seismic Stations</h1>
+            <ReactToPrint
+                trigger={() => <button className="btn btn-outline m-4"><FontAwesomeIcon icon={faPrint} /> Print</button>}
+                content={() => componentRef.current}
+            />
             <div ref={componentRef} className="flex flex-col min-h-screen overflow-x-auto">
                 <div className='flex-grow overflow-x-auto'>
                     {isLoading ? (
@@ -46,37 +49,31 @@ function Sensor() {
                             <span className="loading loading-ring loading-md"></span>
                             <span className="loading loading-ring loading-lg"></span>
                         </div>
-                    ) : error ? (  // Check for error here
+                    ) : error ? (
                         <div className='flex justify-center items-center h-full'>
                             <p className='font-bold text-xl'>{error}</p>
                         </div>
                     ) : (
-                        <>
-                            <ReactToPrint
-                                trigger={() => <button className="btn btn-outline m-4"><FontAwesomeIcon icon={faPrint} /> Print</button>}
-                                content={() => componentRef.current}
-                            />
-                            <table className="table w-full">
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>  {/* Keep row number header as is */}
-                                        {[...Object.keys(rows[0])].reverse().map((header) => (   // Reverse the headers
-                                            <th key={header}>{header}</th>
+                        <table className="table w-full">
+                            <thead className='bg-slate-300'>
+                                <tr>
+                                    <th>No.</th>
+                                    {[...Object.keys(rows[0])].reverse().map((header) => (
+                                        <th key={header}>{header}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rows.map((row, rowIndex) => (
+                                    <tr key={rowIndex}>
+                                        <td>{rowIndex + 1}</td>
+                                        {[...Object.values(row)].reverse().map((value, valueIndex) => (
+                                            <td key={valueIndex} style={{ color: getCellColor(value) }}>{value}</td>
                                         ))}
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {rows.map((row, rowIndex) => (
-                                        <tr key={rowIndex}>
-                                            <td>{rowIndex + 1}</td>  {/* Keep row number as is */}
-                                            {[...Object.values(row)].reverse().map((value, valueIndex) => (  // Reverse the row values
-                                                <td key={valueIndex} style={{ color: getCellColor(value) }}>{value}</td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
+                                ))}
+                            </tbody>
+                        </table>
                     )}
                 </div>
             </div>
@@ -85,4 +82,4 @@ function Sensor() {
     );
 }
 
-export default Sensor;
+export default SismonWrs;

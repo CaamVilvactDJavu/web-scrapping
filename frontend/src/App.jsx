@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './Home';
-import Sensor from "./Sensor";
-import Sensor2 from "./Sensor2";
-import Sensor3 from "./Sensor3";
+import SismonWrs from "./SismonWrs";
+import SensorAcc from "./SensorAcc";
+import SensorInt from "./SensorInt";
 
 function App() {
   return (
@@ -11,13 +11,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/sensors" element={<Sensor />} />
-          <Route path="/sensors2" element={<Sensor2 />} />
-          <Route path="/sensors3" element={<Sensor3 />} />
+          <Route path="/sismon_wrs" element={<SismonWrs />} />
+          <Route path="/status_acc" element={<SensorAcc />} />
+          <Route path="/status_int" element={<SensorInt />} />
         </Routes>
       </BrowserRouter>
     </div>
-
   );
 }
 

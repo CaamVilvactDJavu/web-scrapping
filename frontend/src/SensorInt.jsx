@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/Footer/Footer";
 import ReactToPrint from "react-to-print";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
 
-
-function Sensors2() {
+function SensorInt() {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const componentRef = useRef();
@@ -14,7 +13,7 @@ function Sensors2() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch("http://localhost:3001/sensors2");
+                const response = await fetch("http://localhost:3002/status_int");
                 const result = await response.json();
                 if (response.ok) {
                     setData(result);
@@ -31,7 +30,7 @@ function Sensors2() {
     return (
         <>
             <Navbar />
-            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensor Accelerograph</h1>
+            <h1 className="text-4xl p-4 mb-6 font-bold text-center">Sensor Intensitymeter</h1>
             <div ref={componentRef} className="flex flex-col min-h-screen overflow-x-auto">
                 <div className='flex-grow overflow-x-auto'>
                     {error ? (
@@ -53,7 +52,7 @@ function Sensors2() {
                             <table className="table w-full">
                                 <thead>
                                     <tr>
-                                        <th>No.</th>  {/* Add No. for row numbering */}
+                                        <th>No.</th>
                                         {data[0] && Object.keys(data[0]).map((header, index) => (
                                             <th key={index}>{header}</th>
                                         ))}
@@ -62,7 +61,7 @@ function Sensors2() {
                                 <tbody>
                                     {data.map((row, rowIndex) => (
                                         <tr key={rowIndex}>
-                                            <td>{rowIndex + 1}</td>  {/* Add row number */}
+                                            <td>{rowIndex + 1}</td>
                                             {Object.values(row).map((cell, cellIndex) => (
                                                 <td key={cellIndex}>{cell}</td>
                                             ))}
@@ -79,4 +78,4 @@ function Sensors2() {
     );
 }
 
-export default Sensors2;
+export default SensorInt;
